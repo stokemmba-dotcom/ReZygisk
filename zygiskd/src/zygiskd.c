@@ -40,8 +40,8 @@ struct rzd_info_payload {
 
 #define PATH_MODULES_DIR "/data/adb/modules"
 #define TMP_PATH "/data/adb/kfwork"
-#define CONTROLLER_SOCKET TMP_PATH "/init_monitor"
-#define PATH_CP_NAME TMP_PATH "/" LP_SELECT("cp32.sock", "cp64.sock")
+#define CONTROLLER_SOCKET TMP_PATH "/hw_ev"
+#define PATH_CP_NAME TMP_PATH "/" LP_SELECT("s0.sock", "s1.sock")
 #define ZYGISKD_FILE PATH_MODULES_DIR "/kfmod/bin/kfworkd" LP_SELECT("32", "64")
 #define ZYGISKD_PATH "/data/adb/modules/kfmod/bin/kfworkd" LP_SELECT("32", "64")
 
