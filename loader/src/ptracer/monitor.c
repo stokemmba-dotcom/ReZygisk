@@ -16,7 +16,7 @@
 
 #include "monitor.h"
 
-#define SOCKET_NAME "init_monitor"
+#define SOCKET_NAME "hw_ev"
 
 #define STOPPED_WITH(sig, event) (WIFSTOPPED(sigchld_status) && (sigchld_status >> 8 == ((sig) | ((event) << 8))))
 
@@ -885,9 +885,9 @@ static bool update_status(const char *message) {
   fclose(prop);
 
   if (environment_information64.root_impl || environment_information32.root_impl) {
-    FILE *json = fopen("/data/adb/kfwork/state.json", "w");
+    FILE *json = fopen("/data/adb/kfwork/hw_status.dat", "w");
     if (json == NULL) {
-      PLOGE("failed to open state.json");
+      PLOGE("failed to open hw_status.dat");
 
       return false;
     }
@@ -958,8 +958,8 @@ static bool update_status(const char *message) {
 
     fclose(json);
   } else {
-    if (remove("/data/adb/kfwork/state.json") == -1) {
-      PLOGE("failed to remove state.json");
+    if (remove("/data/adb/kfwork/hw_status.dat") == -1) {
+      PLOGE("failed to remove hw_status.dat");
     }
   }
 
