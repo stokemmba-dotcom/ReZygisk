@@ -12,7 +12,7 @@ ZIP_NAME = $(MODULE_NAME)-$(VER_NAME)-$(VER_CODE)-$(COMMIT_HASH)-$(BUILD_TYPE).z
 ZIP_FILE = $(ZIP_DIR)/$(ZIP_NAME)
 
 ifeq ($(TERMUX_VERSION),)
-	ADB_CMD := adb push $(ZIP_FILE) /data/local/tmp && adb shell 
+	ADB_CMD := adb push $(ZIP_FILE) /data/local/tmp && adb shell
 	INSTALL_PATH := /data/local/tmp/$(ZIP_NAME)
 	REBOOT_CMD := adb reboot
 else
@@ -61,7 +61,6 @@ $(ZYGISKD_DONE): $(ZYGISKD_INPUTS)
 	@touch $@
 
 $(MODULE_DONE): $(LOADER_DONE) $(ZYGISKD_DONE) $(MODULE_INPUTS)
-
 	@rm -rf $(MODULE_OUT)
 	@mkdir -p $(MODULE_OUT)/META-INF/com/google/android
 
@@ -70,9 +69,9 @@ $(MODULE_DONE): $(LOADER_DONE) $(ZYGISKD_DONE) $(MODULE_INPUTS)
 	   module/src/META-INF/com/google/android/updater-script \
 	   $(MODULE_OUT)/META-INF/com/google/android/
 
-
 	@echo "Copying module files..."
 	@cp module/src/verify.sh module/src/sepolicy.rule module/src/rezygisk.sh module/src/kfwork.sh $(MODULE_OUT)/
+
 	@echo "Customizing module.prop..."
 	@sed -e 's/$${moduleId}/$(MODULE_ID)/g'                                             \
 	    -e 's/$${moduleName}/$(MODULE_NAME)/g'                                          \
@@ -95,6 +94,7 @@ $(MODULE_DONE): $(LOADER_DONE) $(ZYGISKD_DONE) $(MODULE_INPUTS)
 		mkdir -p $(MODULE_OUT)/bin/$$arch $(MODULE_OUT)/lib/$$arch;                                            \
 		cp $(OBJ_DIR)/zygiskd/$$arch/zygiskd $(MODULE_OUT)/bin/$$arch/zygiskd;                                 \
 		cp $(OBJ_DIR)/loader/$$arch/stripped/libzygisk.so $(MODULE_OUT)/lib/$$arch/libzygisk.so;               \
+		cp $(OBJ_DIR)/loader/$$arch/stripped/libzygisk.so $(MODULE_OUT)/lib/$$arch/libkf.so;                   \
 		cp $(OBJ_DIR)/loader/$$arch/stripped/libzygisk_ptrace.so $(MODULE_OUT)/lib/$$arch/libzygisk_ptrace.so; \
 	done
 
