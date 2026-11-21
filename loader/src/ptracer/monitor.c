@@ -834,7 +834,7 @@ static char post_section[1024];
                                                                                      \
     if (!status ## suffix.daemon_running) {                                          \
       if (status ## suffix.daemon_error_info) {                                      \
-        strcat(status_text, ("(kfworkd: ");                                         \
+        strcat(status_text, "(kfworkd: ");                                         \
         strcat(status_text, status ## suffix.daemon_error_info);                     \
         strcat(status_text, ")");                                                    \
       } else {                                                                       \
