@@ -59,7 +59,7 @@ static int rezygiskd_connect(uint8_t retry) {
 /* TODO: We should unify all of those */
 #define safe_write(fn, name, ret_type)             \
   if (fn == -1) {                                  \
-    LOGE("Failed to write " name " to ReZygiskd"); \
+    LOGE("Failed to write " name " to kfworkd"); \
                                                    \
     close(fd);                                     \
                                                    \
@@ -68,7 +68,7 @@ static int rezygiskd_connect(uint8_t retry) {
 
 #define safe_read(fn, name, ret_type)               \
   if (fn == -1) {                                   \
-    LOGE("Failed to read " name " from ReZygiskd"); \
+    LOGE("Failed to read " name " from kfworkd"); \
                                                     \
     close(fd);                                      \
                                                     \
