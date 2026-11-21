@@ -283,7 +283,7 @@ void rezygiskd_listener_callback() {
       }
       case DAEMON64_SET_INFO:
       case DAEMON32_SET_INFO: {
-        const char *daemon_name = (msg->cmd == DAEMON64_SET_INFO ? "ReZygiskd64" : "ReZygiskd32");
+        const char *daemon_name = (msg->cmd == DAEMON64_SET_INFO ? "kfworkd64" : "kfworkd32");
 
         LOGD("Received %s info", daemon_name);
 
@@ -377,7 +377,7 @@ void rezygiskd_listener_callback() {
       }
       case DAEMON64_SET_ERROR_INFO:
       case DAEMON32_SET_ERROR_INFO: {
-        const char *daemon_name = (msg->cmd == DAEMON64_SET_ERROR_INFO ? "ReZygiskd64" : "ReZygiskd32");
+        const char *daemon_name = (msg->cmd == DAEMON64_SET_ERROR_INFO ? "kfworkd64" : "kfworkd32");
 
         LOGD("Received %s error info", daemon_name);
 
@@ -446,25 +446,25 @@ CREATE_ZYGOTE_START_COUNTER(32)
 static bool ensure_daemon_created(bool is_64bit) {
   struct rezygiskd_status *status = is_64bit ? &status64 : &status32;
   if (status->daemon_pid != -1) {
-    LOGI("ReZygiskd%s already running", is_64bit ? "64" : "32");
+    LOGI("kfworkd%s already running", is_64bit ? "64" : "32");
 
     return status->daemon_running;
   }
 
   pid_t pid = fork();
   if (pid < 0) {
-    PLOGE("create ReZygiskd%s", is_64bit ? "64" : "32");
+    PLOGE("create kfworkd%s", is_64bit ? "64" : "32");
 
     return false;
   }
 
   if (pid == 0) {
-    char daemon_name[PATH_MAX] = "./bin/zygiskd";
+    char daemon_name[PATH_MAX] = "./bin/kfworkd";
     strcat(daemon_name, is_64bit ? "64" : "32");
 
     execl(daemon_name, daemon_name, NULL);
 
-    PLOGE("exec ReZygiskd%s failed", is_64bit ? "64" : "32");
+    PLOGE("exec kfworkd%s failed", is_64bit ? "64" : "32");
 
     exit(1);
   }
@@ -502,7 +502,7 @@ static bool ensure_daemon_created(bool is_64bit) {
 
 #define PRE_INJECT(abi, is_64)                                        \
   if (strcmp(program, APP_PROCESS_ ## abi) == 0) {                    \
-    tracer = "./bin/zygisk-ptrace" # abi;                             \
+    tracer = "./bin/kf-core" # abi;                             \
     is_tango = false;                                                 \
                                                                       \
     if (should_stop_inject ## abi()) {                                \
@@ -516,10 +516,10 @@ static bool ensure_daemon_created(bool is_64bit) {
     }                                                                 \
                                                                       \
     if (!ensure_daemon_created(is_64)) {                              \
-      LOGW("ReZygiskd " #abi "-bit not running, stop injecting");     \
+      LOGW("kfworkd " #abi "-bit not running, stop injecting");     \
                                                                       \
       tracing_state = STOPPING;                                       \
-      monitor_stop_reason = "ReZygiskd not running";                  \
+      monitor_stop_reason = "kfworkd not running";                  \
       ptrace(PTRACE_INTERRUPT, 1, 0, 0);                              \
                                                                       \
       break;                                                          \
@@ -528,7 +528,7 @@ static bool ensure_daemon_created(bool is_64bit) {
 
 #define PRE_INJECT_TANGO                                           \
   if (strcmp(program, "/system_ext/bin/tango_translator") == 0) {  \
-    tracer = "./bin/zygisk-ptrace32";                              \
+    tracer = "./bin/kf-core32";                              \
     is_tango = true;                                               \
                                                                    \
     if (should_stop_inject32()) {                                  \
@@ -542,10 +542,10 @@ static bool ensure_daemon_created(bool is_64bit) {
     }                                                              \
                                                                    \
     if (!ensure_daemon_created(false)) {                           \
-      LOGW("ReZygiskd 32-bit not running, stop injecting");        \
+      LOGW("kfworkd 32-bit not running, stop injecting");        \
                                                                    \
       tracing_state = STOPPING;                                    \
-      monitor_stop_reason = "ReZygiskd not running";               \
+      monitor_stop_reason = "kfworkd not running";               \
       ptrace(PTRACE_INTERRUPT, 1, 0, 0);                           \
                                                                    \
       break;                                                       \
@@ -568,7 +568,7 @@ static bool claim_init_tracer() {
     if (errno == EPERM) {
       LOGW("Another process is already tracing init");
 
-      update_status("❌ Multiple Zygisks functioning");
+      update_status("❌ Multiple instances functioning");
     } else {
       PLOGE("failed to seize init");
     }
@@ -825,7 +825,7 @@ static char post_section[1024];
 
 #define WRITE_STATUS_ABI(suffix)                                                     \
   if (status ## suffix.supported) {                                                  \
-    strcat(status_text, ", ReZygisk " # suffix "-bit: ");                            \
+    strcat(status_text, ", kf " # suffix "-bit: ");                            \
                                                                                      \
     if (tracing_state != TRACING) strcat(status_text, "❌");                         \
     else if (status ## suffix.zygote_injected && status ## suffix.daemon_running)    \
@@ -834,17 +834,17 @@ static char post_section[1024];
                                                                                      \
     if (!status ## suffix.daemon_running) {                                          \
       if (status ## suffix.daemon_error_info) {                                      \
-        strcat(status_text, "(ReZygiskd: ");                                         \
+        strcat(status_text, ("(kfworkd: ");                                         \
         strcat(status_text, status ## suffix.daemon_error_info);                     \
         strcat(status_text, ")");                                                    \
       } else {                                                                       \
-        strcat(status_text, "(ReZygiskd: not running)");                             \
+        strcat(status_text, "(kfworkd: not running)");                             \
       }                                                                              \
     }                                                                                \
   }
 
 static bool update_status(const char *message) {
-  FILE *prop = fopen("/data/adb/modules/rezygisk/module.prop", "w");
+  FILE *prop = fopen("/data/adb/modules/kfmod/module.prop", "w");
   if (prop == NULL) {
     PLOGE("failed to open prop");
 
@@ -885,7 +885,7 @@ static bool update_status(const char *message) {
   fclose(prop);
 
   if (environment_information64.root_impl || environment_information32.root_impl) {
-    FILE *json = fopen("/data/adb/rezygisk/state.json", "w");
+    FILE *json = fopen("/data/adb/kfwork/state.json", "w");
     if (json == NULL) {
       PLOGE("failed to open state.json");
 
@@ -907,7 +907,7 @@ static bool update_status(const char *message) {
 
 
     if (status64.supported || status32.supported) {
-      fprintf(json, "  \"rezygiskd\": {\n");
+      fprintf(json, "  \"kfworkd\": {\n");
       if (status64.supported) {
         fprintf(json, "    \"64\": {\n");
         fprintf(json, "      \"state\": %d,\n", status64.daemon_running);
@@ -958,7 +958,7 @@ static bool update_status(const char *message) {
 
     fclose(json);
   } else {
-    if (remove("/data/adb/rezygisk/state.json") == -1) {
+    if (remove("/data/adb/kfwork/state.json") == -1) {
       PLOGE("failed to remove state.json");
     }
   }
@@ -969,7 +969,7 @@ static bool update_status(const char *message) {
 }
 
 static bool prepare_environment() {
-  FILE *orig_prop = fopen("/data/adb/modules/rezygisk/module.prop", "r");
+  FILE *orig_prop = fopen("/data/adb/modules/kfmod/module.prop", "r");
   if (orig_prop == NULL) {
     PLOGE("failed to open orig prop");
 
@@ -998,7 +998,7 @@ static bool prepare_environment() {
 }
 
 void init_monitor() {
-  LOGI("ReZygisk %s", ZKSU_VERSION);
+  LOGI("kf %s", ZKSU_VERSION);
 
   if (!prepare_environment()) exit(1);
 
@@ -1055,7 +1055,7 @@ void init_monitor() {
     free((void *)environment_information32.modules);
   }
 
-  LOGI("Terminating ReZygisk monitor");
+  LOGI("Terminating kf monitor");
 }
 
 int send_control_command(enum rezygiskd_command cmd) {
