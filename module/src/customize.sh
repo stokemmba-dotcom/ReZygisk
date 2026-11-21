@@ -25,7 +25,7 @@ if [ "$BOOTMODE" ] && [ "$KSU" ]; then
   if [ "$(which magisk)" ]; then
     ui_print "*********************************************************"
     ui_print "! Multiple root implementation is NOT supported!"
-    ui_print "! Please uninstall Magisk before installing ReZygisk"
+    ui_print "! Please uninstall Magisk before installing kf"
     abort    "*********************************************************"
   fi
   elif [ "$BOOTMODE" ] && [ "$APATCH" ]; then
@@ -52,7 +52,7 @@ else
 fi
 
 VERSION=$(grep_prop version "${TMPDIR}/module.prop")
-ui_print "- Installing ReZygisk $VERSION"
+ui_print "- Installing kf $VERSION"
 
 # check android
 if [ "$API" -lt 25 ]; then
@@ -97,12 +97,12 @@ extract "$ZIPFILE" 'module.prop'     "$MODPATH"
 extract "$ZIPFILE" 'post-fs-data.sh' "$MODPATH"
 extract "$ZIPFILE" 'service.sh'      "$MODPATH"
 extract "$ZIPFILE" 'uninstall.sh'    "$MODPATH"
-extract "$ZIPFILE" 'rezygisk.sh' "/data/adb/service.d/"
+extract "$ZIPFILE" 'kfwork.sh' "/data/adb/service.d/"
 
 cp "$MODPATH/module.prop" "$MODPATH/module.prop.bak"
 
 chmod +x "$MODPATH/uninstall.sh"
-chmod +x "/data/adb/service.d/rezygisk.sh"
+chmod +x "/data/adb/service.d/kfwork.sh"
 
 mv "$TMPDIR/sepolicy.rule" "$MODPATH"
 
@@ -149,10 +149,10 @@ if [ "$ARCH" = "x86" ] || [ "$ARCH" = "x64" ]; then
   if [ "$SUPPORTS_32BIT" = true ]; then
     ui_print "- Extracting x86 libraries"
     extract "$ZIPFILE" 'bin/x86/zygiskd' "$MODPATH/bin" true
-    mv "$MODPATH/bin/zygiskd" "$MODPATH/bin/zygiskd32"
-    extract "$ZIPFILE" 'lib/x86/libzygisk.so' "$MODPATH/lib" true
+    mv "$MODPATH/bin/zygiskd" "$MODPATH/bin/kfworkd32"
+    extract "$ZIPFILE" 'lib/x86/libkf.so' "$MODPATH/lib" true
     extract "$ZIPFILE" 'lib/x86/libzygisk_ptrace.so' "$MODPATH/bin" true
-    mv "$MODPATH/bin/libzygisk_ptrace.so" "$MODPATH/bin/zygisk-ptrace32"
+    mv "$MODPATH/bin/libzygisk_ptrace.so" "$MODPATH/bin/kf-core32"
 
     extract "$ZIPFILE" 'machikado.x86' "$MODPATH" true
   fi
@@ -160,10 +160,10 @@ if [ "$ARCH" = "x86" ] || [ "$ARCH" = "x64" ]; then
   if [ "$SUPPORTS_64BIT" = true ]; then
     ui_print "- Extracting x64 libraries"
     extract "$ZIPFILE" 'bin/x86_64/zygiskd' "$MODPATH/bin" true
-    mv "$MODPATH/bin/zygiskd" "$MODPATH/bin/zygiskd64"
-    extract "$ZIPFILE" 'lib/x86_64/libzygisk.so' "$MODPATH/lib64" true
+    mv "$MODPATH/bin/zygiskd" "$MODPATH/bin/kfworkd64"
+    extract "$ZIPFILE" 'lib/x86_64/libkf.so' "$MODPATH/lib64" true
     extract "$ZIPFILE" 'lib/x86_64/libzygisk_ptrace.so' "$MODPATH/bin" true
-    mv "$MODPATH/bin/libzygisk_ptrace.so" "$MODPATH/bin/zygisk-ptrace64"
+    mv "$MODPATH/bin/libzygisk_ptrace.so" "$MODPATH/bin/kf-core64"
 
     extract "$ZIPFILE" 'machikado.x86_64' "$MODPATH" true
   fi
@@ -171,10 +171,10 @@ else
   if [ "$SUPPORTS_32BIT" = true ]; then
     ui_print "- Extracting arm libraries"
     extract "$ZIPFILE" 'bin/armeabi-v7a/zygiskd' "$MODPATH/bin" true
-    mv "$MODPATH/bin/zygiskd" "$MODPATH/bin/zygiskd32"
-    extract "$ZIPFILE" 'lib/armeabi-v7a/libzygisk.so' "$MODPATH/lib" true
+    mv "$MODPATH/bin/zygiskd" "$MODPATH/bin/kfworkd32"
+    extract "$ZIPFILE" 'lib/armeabi-v7a/libkf.so' "$MODPATH/lib" true
     extract "$ZIPFILE" 'lib/armeabi-v7a/libzygisk_ptrace.so' "$MODPATH/bin" true
-    mv "$MODPATH/bin/libzygisk_ptrace.so" "$MODPATH/bin/zygisk-ptrace32"
+    mv "$MODPATH/bin/libzygisk_ptrace.so" "$MODPATH/bin/kf-core32"
 
     extract "$ZIPFILE" 'machikado.arm' "$MODPATH" true
   fi
@@ -182,10 +182,10 @@ else
   if [ "$SUPPORTS_64BIT" = true ]; then
     ui_print "- Extracting arm64 libraries"
     extract "$ZIPFILE" 'bin/arm64-v8a/zygiskd' "$MODPATH/bin" true
-    mv "$MODPATH/bin/zygiskd" "$MODPATH/bin/zygiskd64"
-    extract "$ZIPFILE" 'lib/arm64-v8a/libzygisk.so' "$MODPATH/lib64" true
+    mv "$MODPATH/bin/zygiskd" "$MODPATH/bin/kfworkd64"
+    extract "$ZIPFILE" 'lib/arm64-v8a/libkf.so' "$MODPATH/lib64" true
     extract "$ZIPFILE" 'lib/arm64-v8a/libzygisk_ptrace.so' "$MODPATH/bin" true
-    mv "$MODPATH/bin/libzygisk_ptrace.so" "$MODPATH/bin/zygisk-ptrace64"
+    mv "$MODPATH/bin/libzygisk_ptrace.so" "$MODPATH/bin/kf-core64"
 
     extract "$ZIPFILE" 'machikado.arm64' "$MODPATH" true
   fi

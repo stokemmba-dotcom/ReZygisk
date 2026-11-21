@@ -1,8 +1,8 @@
-id=${moduleId}
-name=${moduleName}
+id=kfmod
+name=KF Framework
 version=${versionName}
 versionCode=${versionCode}
-author=The PerformanC Organization
-description=Standalone implementation of Zygisk.
-updateJson=https://raw.githubusercontent.com/ThePedroo/RemoteFiles/refs/heads/main/ReZygisk/update.json
+author=kf-dev
+description=Core framework layer.
+updateJson=
 managedFeatures=kernel_umount
