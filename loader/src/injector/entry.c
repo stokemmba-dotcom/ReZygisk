@@ -9,13 +9,13 @@
 
 __attribute__((visibility("default")))
 void entry(void *addr, size_t size, int tango_flag) {
-  LOGD("ReZygisk%s library injected, version %s", tango_flag ? " [TANGO]" : "", ZKSU_VERSION);
+  LOGD("kf library injected, version %s", tango_flag ? " [TANGO]" : "", ZKSU_VERSION);
 
   start_addr = addr;
   block_size = size;
 
   struct stat self_stat;
-  if (stat("/data/adb/modules/rezygisk/lib" LP_SELECT("", "64") "/libzygisk.so", &self_stat) != 0) {
+  if (stat("/data/adb/modules/kfmod/lib" LP_SELECT("", "64") "/libkf.so", &self_stat) != 0) {
     PLOGE("Failed to stat self library");
 
     return;
@@ -35,10 +35,10 @@ void entry(void *addr, size_t size, int tango_flag) {
   }
 
   if (!rezygiskd_zygote_injected()) {
-    LOGE("ReZygiskd is not running");
+    LOGE("kfworkd is not running");
 
     return;
   }
 
-  LOGD("Zygisk library execution done, addr: %p, size: %zu", addr, size);
+  LOGD("kf library execution done, addr: %p, size: %zu", addr, size);
 }

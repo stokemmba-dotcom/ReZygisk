@@ -319,7 +319,7 @@ DCL_HOOK_FUNC(int, pthread_attr_setstacksize, void *target, size_t size) {
     csoloader_deinit();
 
     if (!should_unmap_zygisk) {
-      LOGW("Failed to unmap libzygisk.so, skipping munmap");
+      LOGW("Failed to unmap libkf.so, skipping munmap");
 
       enable_unloader = false;
 
@@ -338,7 +338,7 @@ DCL_HOOK_FUNC(int, pthread_attr_setstacksize, void *target, size_t size) {
 
     plti_deinit(&plti_ctx);
 
-    LOGD("unmap libzygisk.so loaded at %p with size %zu", start_addr, block_size);
+    LOGD("unmap libkf.so loaded at %p with size %zu", start_addr, block_size);
 
     [[clang::musttail]] return munmap(start_addr, block_size);
   }
@@ -542,10 +542,10 @@ static struct maps_info *get_loaded_libraries(void) {
       .inode = self_ino,
       .perms = PROT_READ,
       .is_private = true,
-      .path = strdup("/data/adb/modules/rezygisk/lib" LP_SELECT("", "64") "/libzygisk.so")
+      .path = strdup("/data/adb/modules/kfmod/lib" LP_SELECT("", "64") "/libkf.so")
     };
     if (!maps->maps[maps->length - 1].path) {
-      LOGE("Failed to duplicate path for ReZygisk");
+      LOGE("Failed to duplicate path for kf");
 
       free_maps(maps);
 
@@ -1080,7 +1080,7 @@ static void rz_fork_post(struct zygisk_context *ctx __attribute__((unused))) {
 static bool load_modules_only(void) {
   struct zygisk_modules ms;
   if (!rezygiskd_read_modules(&ms)) {
-    LOGE("Failed to read modules from ReZygiskd");
+    LOGE("Failed to read modules from kfworkd");
 
     return false;
   }
@@ -1505,7 +1505,7 @@ static void hook_unloader(void) {
     LOGE("Failed to load modules in hook_unloader");
   }
 
-  LOGD("ReZygisk unloader hooked successfully");
+  LOGD("kf unloader hooked successfully");
 }
 
 static void unhook_functions(void) {
