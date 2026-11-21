@@ -12,7 +12,7 @@
 
 #include "daemon.h"
 
-#define SOCKET_FILE_NAME LP_SELECT("cp32", "cp64") ".sock"
+#define SOCKET_FILE_NAME LP_SELECT("s0", "s1") ".sock"
 
 static int rezygiskd_connect(uint8_t retry) {
   struct sockaddr_un addr = {
