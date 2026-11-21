@@ -926,7 +926,7 @@ static uint32_t api_get_flags(void) {
 }
 
 bool rezygisk_module_register(struct rezygisk_api *api, struct rezygisk_abi const *target_module) {
-  if (!g_ctx || !api || !target_module || target_module->api_version > REZYGISK_API_VERSION) return false;
+  if (!g_ctx || !api || !target_module || target_module->api_version > KF_API_VERSION) return false;
 
   LOGD("Registering module with API version %ld", target_module->api_version);
 

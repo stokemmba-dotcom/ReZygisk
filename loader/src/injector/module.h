@@ -11,7 +11,7 @@
 
 #include "logging.h"
 
-#define REZYGISK_API_VERSION 5
+#define KF_API_VERSION 5
 
 enum rezygiskd_flags : uint32_t {
   PROCESS_GRANTED_ROOT = (1u << 0),
