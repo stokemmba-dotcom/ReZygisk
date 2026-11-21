@@ -8,12 +8,12 @@
 #include "utils.h"
 
 int main(int argc, char *argv[]) {
-  LOGI("Welcome to ReZygiskd%s", LP_SELECT("32", "64"));
+  LOGI("Welcome to kfworkd%s", LP_SELECT("32", "64"));
 
   if (argc > 1) {
     if (strcmp(argv[1], "companion") == 0) {
       if (argc < 3) {
-        LOGI("Usage: zygiskd companion <fd>");
+        LOGI("Usage: kfworkd companion <fd>");
 
         return 1;
       }
@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     }
 
     else if (strcmp(argv[1], "version") == 0) {
-      LOGI("ReZygisk Daemon %s", ZKSU_VERSION);
+      LOGI("kfworkd %s", ZKSU_VERSION);
 
       return 0;
     }
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     }
 
     else {
-      LOGI("Usage: zygiskd [companion|version|root]");
+      LOGI("Usage: kfworkd [companion|version|root]");
 
       return 0;
     }
